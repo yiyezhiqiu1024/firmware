@@ -50,6 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "modules/WaypointModule.h"
 #include "sleep.h"
 #include "target_specific.h"
+#include "main.h"
 
 #if HAS_WIFI && !defined(ARCH_PORTDUINO)
 #include "mesh/wifi/WiFiAPClient.h"
@@ -952,10 +953,14 @@ bool deltaToTimestamp(uint32_t secondsAgo, uint8_t *hours, uint8_t *minutes, int
 /// Draw the last text message we received
 static void drawTextMessageFrame(OLEDDisplay *display, OLEDDisplayUiState *state, int16_t x, int16_t y)
 {
+    if (redBankController->isMeshPacketListEmpty()) 
+        redBankController->saveMeshPacket(devicestate.rx_text_message);
+    
+
     // the max length of this buffer is much longer than we can possibly print
     static char tempBuf[237];
 
-    const meshtastic_MeshPacket &mp = devicestate.rx_text_message;
+    const meshtastic_MeshPacket &mp = redBankController->getCurrentMeshPacket();
     meshtastic_NodeInfoLite *node = nodeDB->getMeshNode(getFrom(&mp));
     // LOG_DEBUG("Draw text message from 0x%x: %s", mp.from,
     // mp.decoded.variant.data.decoded.bytes);

@@ -4,6 +4,8 @@
 #include "PowerFSM.h"
 #include "buzz.h"
 #include "configuration.h"
+#include "main.h"
+
 TextMessageModule *textMessageModule;
 
 ProcessMessage TextMessageModule::handleReceived(const meshtastic_MeshPacket &mp)
@@ -16,6 +18,9 @@ ProcessMessage TextMessageModule::handleReceived(const meshtastic_MeshPacket &mp
     // Keep a copy of the most recent text message.
     devicestate.rx_text_message = mp;
     devicestate.has_rx_text_message = true;
+
+    // 保存最新的消息
+    redBankController->saveMeshPacket(mp);
 
     powerFSM.trigger(EVENT_RECEIVED_MSG);
     notifyObservers(&mp);

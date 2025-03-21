@@ -133,6 +133,11 @@ void setupNicheGraphics();
 #include "nicheGraphics.h"
 #endif
 
+#ifdef RED_BANK_S3
+#include "red_bank_s3/RedBankController.h"
+RedBankS3::RedBankController *redBankController = nullptr;
+#endif
+
 using namespace concurrency;
 
 volatile static const char slipstreamTZString[] = {USERPREFS_TZ_STRING};
@@ -770,6 +775,11 @@ void setup()
 #if HAS_SCREEN
     screen = new graphics::Screen(screen_found, screen_model, screen_geometry);
 #endif
+
+#ifdef RED_BANK_S3
+    redBankController = new RedBankS3::RedBankController();
+#endif
+
     // setup TZ prior to time actions.
 #if !MESHTASTIC_EXCLUDE_TZ
     LOG_DEBUG("Use compiled/slipstreamed %s", slipstreamTZString); // important, removing this clobbers our magic string
@@ -1201,6 +1211,11 @@ void setup()
     LOG_DEBUG("Free heap  : %7d bytes", ESP.getFreeHeap());
     LOG_DEBUG("Free PSRAM : %7d bytes", ESP.getFreePsram());
 #endif
+
+#ifdef RED_BANK_S3
+    redBankController->setup();
+#endif
+
 }
 #endif
 uint32_t rebootAtMsec;   // If not zero we will reboot at this time (used to reboot shortly after the update completes)
@@ -1281,6 +1296,9 @@ void loop()
 #endif
 #ifdef ARCH_NRF52
     nrf52Loop();
+#endif
+#ifdef RED_BANK_S3
+    redBankController->loop();
 #endif
     powerCommandsCheck();
 
