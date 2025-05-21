@@ -43,6 +43,16 @@ S3_VARIANTS=(
 	"wireless-tracker"
 	"station-g2"
 	"unphone"
+	"t-eth-elite"
+ 	"mesh-tab"
+	"dreamcatcher"
+	"ESP32-S3-Pico"
+	"seeed-sensecap-indicator"
+	"heltec_capsule_sensor_v3"
+	"vision-master"
+	"icarus"
+	"tracksenger"
+	"elecrow-adv"
 )
 
 # Determine the correct esptool command to use
@@ -138,7 +148,7 @@ if [ -f "${FILENAME}" ] && [ -n "${FILENAME##*"update"*}" ]; then
 
 	# littlefs* offset for BigDB 8mb and OTA OFFSET.
 	for variant in "${BIGDB_8MB[@]}"; do
-		if [ -n "${FILENAME##*"$variant"*}" ]; then
+		if [ -z "${FILENAME##*"$variant"*}" ]; then
 			OFFSET=0x670000
 			OTA_OFFSET=0x340000
 		fi
@@ -146,7 +156,7 @@ if [ -f "${FILENAME}" ] && [ -n "${FILENAME##*"update"*}" ]; then
 
 	# littlefs* offset for BigDB 16mb and OTA OFFSET.
 	for variant in "${BIGDB_16MB[@]}"; do
-		if [ -n "${FILENAME##*"$variant"*}" ]; then
+		if [ -z "${FILENAME##*"$variant"*}" ]; then
 			OFFSET=0xc90000
 			OTA_OFFSET=0x650000
 		fi
@@ -155,7 +165,7 @@ if [ -f "${FILENAME}" ] && [ -n "${FILENAME##*"update"*}" ]; then
 	# Account for S3 board's different OTA partition
 	# FIXME: Use PlatformIO info to determine MCU type, this is unmaintainable
 	for variant in "${S3_VARIANTS[@]}"; do
-		if [ -n "${FILENAME##*"$variant"*}" ]; then
+		if [ -z "${FILENAME##*"$variant"*}" ]; then
 			MCU="esp32s3"
 		fi
 	done

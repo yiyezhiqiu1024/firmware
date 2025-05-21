@@ -13,17 +13,16 @@
 #endif // HAS_ETHERNET
 
 #define UDP_MULTICAST_DEFAUL_PORT 4403 // Default port for UDP multicast is same as TCP api server
-#define UDP_MULTICAST_THREAD_INTERVAL_MS 15000
 
-class UdpMulticastThread : public concurrency::OSThread
+class UdpMulticastHandler final
 {
   public:
-    UdpMulticastThread() : OSThread("UdpMulticast") { udpIpAddress = IPAddress(224, 0, 0, 69); }
+    UdpMulticastHandler() { udpIpAddress = IPAddress(224, 0, 0, 69); }
 
     void start()
     {
         if (udp.listenMulticast(udpIpAddress, UDP_MULTICAST_DEFAUL_PORT, 64)) {
-#if !defined(ARCH_PORTDUINO)
+#ifndef ARCH_PORTDUINO
             // FIXME(PORTDUINO): arduino lacks IPAddress::toString()
             LOG_DEBUG("UDP Listening on IP: %s", WiFi.localIP().toString().c_str());
 #else
@@ -59,7 +58,7 @@ class UdpMulticastThread : public concurrency::OSThread
         if (!mp || !udp) {
             return false;
         }
-#if !defined(ARCH_PORTDUINO)
+#ifndef ARCH_PORTDUINO
         if (WiFi.status() != WL_CONNECTED) {
             return false;
         }
@@ -69,14 +68,6 @@ class UdpMulticastThread : public concurrency::OSThread
         size_t encodedLength = pb_encode_to_bytes(buffer, sizeof(buffer), &meshtastic_MeshPacket_msg, mp);
         udp.writeTo(buffer, encodedLength, udpIpAddress, UDP_MULTICAST_DEFAUL_PORT);
         return true;
-    }
-
-  protected:
-    int32_t runOnce() override
-    {
-        canSleep = true;
-        // TODO: Implement nodeinfo broadcast
-        return UDP_MULTICAST_THREAD_INTERVAL_MS;
     }
 
   private:

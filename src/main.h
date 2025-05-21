@@ -51,8 +51,8 @@ extern AudioThread *audioThread;
 #endif
 
 #ifdef HAS_UDP_MULTICAST
-#include "mesh/udp/UdpMulticastThread.h"
-extern UdpMulticastThread *udpThread;
+#include "mesh/udp/UdpMulticastHandler.h"
+extern UdpMulticastHandler *udpHandler;
 #endif
 
 // Global Screen singleton.
@@ -64,7 +64,7 @@ extern graphics::Screen *screen;
 extern RedBankS3::RedBankController *redBankController;
 #endif
 
-#if !defined(ARCH_PORTDUINO) && !defined(ARCH_STM32WL) && !MESHTASTIC_EXCLUDE_I2C
+#if !defined(ARCH_STM32WL) && !MESHTASTIC_EXCLUDE_I2C
 #include "motion/AccelerometerThread.h"
 extern AccelerometerThread *accelerometerThread;
 #endif
